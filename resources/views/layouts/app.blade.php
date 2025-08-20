@@ -1,9 +1,124 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name        /* Cards and Content */
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 2px 4px var(--shadow-color);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+            border: 1px solid var(--border-color);
+        }
+
+        .card:hover {
+            background-color: var(--card-hover);
+            box-shadow: 0 4px 6px var(--shadow-color);
+        }
+
+        .card-header {
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-title {
+            color: var(--heading-color);
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .card-subtitle {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Campaign Stats */
+        .stat-value {
+            color: var(--text-color);
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .stat-label {
+            color: var(--stats-text);
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+
+        /* Content Text */
+        .text-primary {
+            color: var(--text-color);
+        }
+
+        .text-secondary {
+            color: var(--text-secondary);
+        }
+
+        .text-muted {
+            color: var(--text-muted);
+        }
+
+        .text-light {
+            color: var(--text-light);
+        }
+
+        /* Alerts */
+        .alert {
+            padding: 1rem;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+            border: 1px solid transparent;
+        }
+
+        .alert-success {
+            background-color: rgba(16, 185, 129, 0.1);
+            border-color: var(--success-color);
+            color: var(--success-color);
+        }
+
+        .alert-error {
+            background-color: rgba(239, 68, 68, 0.1);
+            border-color: var(--error-color);
+            color: var(--error-color);
+        }
+
+        /* Theme Toggle Button */
+        .theme-toggle {
+            background: none;
+            border: 2px solid var(--text-color);
+            color: var(--text-color);
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-left: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .theme-toggle:hover {
+            opacity: 0.8;
+        }ontent="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'DanPotro')</title>
+    <script>
+        // Check for saved theme preference, otherwise use system preference
+        const getTheme = () => {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme) {
+                return savedTheme;
+            }
+            return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        };
+
+        // Apply theme immediately to prevent flash
+        document.documentElement.setAttribute('data-theme', getTheme());
+    </script>
     <style>
         * {
             margin: 0;
@@ -11,11 +126,93 @@
             box-sizing: border-box;
         }
 
+        :root[data-theme="light"] {
+            --bg-color: #f8fafc;
+            --text-color: #333;
+            --text-muted: #666;
+            --text-light: #fff;
+            --text-secondary: #4b5563;
+            --text-placeholder: #9ca3af;
+            --card-bg: #ffffff;
+            --card-hover: #f8fafc;
+            --header-bg: linear-gradient(135deg, #87CEEB, #5F9EA0);
+            --border-color: #e2e8f0;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --link-color: #3b82f6;
+            --link-hover: #1d4ed8;
+            --heading-color: #111;
+            --label-color: #374151;
+            --button-bg: #3b82f6;
+            --button-hover: #1d4ed8;
+            --button-text: #ffffff;
+            --success-color: #10b981;
+            --error-color: #ef4444;
+            --nav-text: #ffffff;
+            --stats-text: #666;
+            --form-bg: #ffffff;
+            --form-focus: #f8fafc;
+        }
+
+        :root[data-theme="dark"] {
+            --bg-color: #111827;
+            --text-color: #000080;           /* Changed to navy blue */
+            --text-muted: #000066;          /* Dark blue for muted text */
+            --text-light: #000099;          /* Slightly lighter blue */
+            --text-secondary: #000080;      /* Navy blue for secondary text */
+            --text-placeholder: #000066;    /* Dark blue for placeholders */
+            --card-bg: #1f2937;
+            --card-hover: #2d3748;
+            --header-bg: linear-gradient(135deg, #1f2937, #111827);
+            --border-color: #374151;
+            --shadow-color: rgba(0, 0, 0, 0.5);
+            --link-color: #000099;          /* Slightly lighter blue for links */
+            --link-hover: #0000cc;          /* Brighter blue for link hover */
+            --heading-color: #000080;       /* Navy blue for headings */
+            --label-color: #000080;         /* Navy blue for labels */
+            --button-bg: #3b82f6;
+            --button-hover: #60a5fa;
+            --button-text: #ffffff;         /* Keeping button text white for contrast */
+            --success-color: #34d399;
+            --error-color: #f87171;
+            --nav-text: #ffffff;            /* Keeping nav text white for contrast */
+            --stats-text: #000080;          /* Navy blue for stats */
+            --form-bg: #374151;
+            --form-focus: #4b5563;
+        }
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f8fafc;
-            color: #333;
+            background-color: var(--bg-color);
+            color: var(--text-color);
             line-height: 1.6;
+            transition: all 0.3s ease;
+        }
+
+        /* Typography */
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--heading-color);
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        p {
+            color: var(--text-color);
+            margin-bottom: 1rem;
+        }
+
+        a {
+            color: var(--link-color);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        a:hover {
+            color: var(--link-hover);
+            text-decoration: underline;
+        }
+
+        .text-muted {
+            color: var(--text-muted);
         }
 
         .container {
@@ -24,12 +221,44 @@
             padding: 0 20px;
         }
 
-        /* Header */
+        /* Header & Navigation */
         .header {
-            background: linear-gradient(135deg, #87CEEB, #5F9EA0);
-            color: white;
+            background: var(--header-bg);
+            color: var(--nav-text);
             padding: 1rem 0;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 10px var(--shadow-color);
+            transition: all 0.3s ease;
+        }
+
+        .nav-menu a {
+            color: var(--nav-text);
+            opacity: 0.9;
+            transition: opacity 0.2s ease;
+        }
+
+        .nav-menu a:hover {
+            opacity: 1;
+            text-decoration: none;
+        }
+
+        /* Footer */
+        .footer {
+            background-color: var(--card-bg);
+            color: var(--text-secondary);
+            padding: 2rem 0;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .footer p {
+            color: var(--text-muted);
+        }
+
+        .footer a {
+            color: var(--link-color);
+        }
+
+        .footer a:hover {
+            color: var(--link-hover);
         }
 
         .header-content {
@@ -298,13 +527,46 @@
         .p-1 { padding: 0.5rem; }
         .p-2 { padding: 1rem; }
         .p-3 { padding: 1.5rem; }
+
+        /* Donor Badge Styles */
+        .donor-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-weight: 600;
+            font-size: 0.875rem;
+            gap: 0.5rem;
+        }
+
+        .donor-badge-gold {
+            background-color: rgba(255, 215, 0, 0.2);
+            color: #B8860B;
+            border: 1px solid #FFD700;
+        }
+
+        .donor-badge-silver {
+            background-color: rgba(192, 192, 192, 0.2);
+            color: #707070;
+            border: 1px solid #C0C0C0;
+        }
+
+        .donor-badge-bronze {
+            background-color: rgba(205, 127, 50, 0.2);
+            color: #8B4513;
+            border: 1px solid #CD7F32;
+        }
+
+        .text-gray-500 {
+            color: #6b7280;
+        }
     </style>
 </head>
 <body>
     <header class="header">
         <div class="container">
             <div class="header-content">
-                <a href="{{ route('home') }}" class="logo">Donation Tracker</a>
+                <a href="{{ route('home') }}" class="logo">DanPotro</a>
                 <nav>
                     <ul class="nav-menu">
                         <li><a href="{{ route('home') }}">Home</a></li>
@@ -325,11 +587,50 @@
                             <li><a href="{{ route('login') }}">Login</a></li>
                             <li><a href="{{ route('register') }}">Register</a></li>
                         @endauth
+                        <li>
+                            <button class="theme-toggle" onclick="toggleTheme()">
+                                <span id="theme-icon">🌞</span>
+                                <span id="theme-text">Light</span>
+                            </button>
+                        </li>
                     </ul>
                 </nav>
             </div>
         </div>
     </header>
+
+    <script>
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            
+            // Update button text and icon
+            const themeIcon = document.getElementById('theme-icon');
+            const themeText = document.getElementById('theme-text');
+            if (newTheme === 'dark') {
+                themeIcon.textContent = '🌙';
+                themeText.textContent = 'Dark';
+            } else {
+                themeIcon.textContent = '🌞';
+                themeText.textContent = 'Light';
+            }
+        }
+
+        // Set initial button state
+        window.addEventListener('DOMContentLoaded', () => {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const themeIcon = document.getElementById('theme-icon');
+            const themeText = document.getElementById('theme-text');
+            if (currentTheme === 'dark') {
+                themeIcon.textContent = '🌙';
+                themeText.textContent = 'Dark';
+            }
+        });
+    </script>
 
     <main class="main-content">
         <div class="container">
@@ -351,8 +652,8 @@
 
     <footer class="footer">
         <div class="container">
-            <p>&copy; {{ date('Y') }} Donation Tracker. All rights reserved.</p>
+            <p>&copy; {{ date('Y') }} DanPotro. All rights reserved.</p>
         </div>
     </footer>
 </body>
-</html> 
+</html>

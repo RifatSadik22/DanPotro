@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', $campaign->title . ' - Donation Tracker')
+@section('title', $campaign->title . ' - DanPotro')
 
 @section('content')
 <div class="card">

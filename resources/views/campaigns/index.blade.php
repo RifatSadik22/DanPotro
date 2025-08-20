@@ -1,8 +1,20 @@
 @extends('layouts.app')
 
-@section('title', 'Campaigns - Donation Tracker')
+@section('title', 'Campaigns - DanPotro')
 
 @section('content')
+<div class="card mb-4">
+    <div class="card-body">
+        <form action="{{ route('campaigns.index') }}" method="GET" class="search-form">
+            <div class="input-group">
+                <input type="text" name="search" class="form-control" placeholder="Search campaigns..." 
+                       value="{{ request('search') }}">
+                <button type="submit" class="btn btn-primary">Search</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <div class="card">
     <div class="card-header">
         <h1 class="card-title">Active Campaigns</h1>
@@ -54,4 +66,4 @@
     </div>
 </div>
 @endif
-@endsection 
+@endsection

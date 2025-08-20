@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Test Form - Donation Tracker')
+@section('title', 'Create New Campaign - DanPotro')
 
 @section('content')
 <div class="card">

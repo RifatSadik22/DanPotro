@@ -17,9 +17,19 @@ class CampaignController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $campaigns = Campaign::where('status', 'active')->latest()->get();
+        $query = Campaign::query();
+        
+        if ($search = $request->input('search')) {
+            $query->where('title', 'like', "%{$search}%")
+                  ->orWhere('description', 'like', "%{$search}%");
+        }
+        
+        $campaigns = $query->where('status', 'active')
+                          ->latest()
+                          ->paginate(12);
+        
         return view('campaigns.index', compact('campaigns'));
     }
 

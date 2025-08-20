@@ -44,8 +44,7 @@
         <div style="display: flex; justify-content: space-between; align-items: center;">
             <h2 class="card-title">Campaign Management</h2>
             <div style="display: flex; gap: 1rem;">
-                <a href="{{ route('campaigns.create') }}" class="btn btn-primary">Create New Campaign</a>
-                <a href="{{ route('test-form') }}" class="btn btn-secondary">Test Form</a>
+                <a href="{{ route('test-form') }}" class="btn btn-secondary">Create New Campaign</a>
             </div>
         </div>
     </div>
@@ -107,8 +106,7 @@
         @else
             <div class="text-center">
                 <h3>No Campaigns Yet</h3>
-                <p>Create your first campaign to get started!</p>
-                <a href="{{ route('campaigns.create') }}" class="btn btn-primary">Create Campaign</a>
+                <p>No campaigns are available at this time.</p>
             </div>
         @endif
     </div>

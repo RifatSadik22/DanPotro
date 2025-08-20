@@ -1,0 +1,65 @@
+/* Badge Styles */
+.badge {
+    padding: 0.35em 0.65em;
+    border-radius: 0.25rem;
+    font-size: 0.875em;
+    font-weight: 700;
+}
+
+/* Status Badges */
+.badge-none {
+    background-color: #6c757d;
+    color: white;
+}
+
+.badge-bronze {
+    background-color: #cd7f32;
+    color: white;
+}
+
+.badge-silver {
+    background-color: #c0c0c0;
+    color: white;
+}
+
+.badge-gold {
+    background-color: #ffd700;
+    color: black;
+}
+
+/* Campaign Status */
+.campaign-status {
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.875rem;
+}
+
+.status-active {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.status-closed {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+/* Layout Utilities */
+.grid {
+    display: grid;
+    gap: 1rem;
+}
+
+.grid-2 {
+    grid-template-columns: repeat(2, 1fr);
+}
+
+.grid-3 {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+@media (max-width: 768px) {
+    .grid-2, .grid-3 {
+        grid-template-columns: 1fr;
+    }
+}

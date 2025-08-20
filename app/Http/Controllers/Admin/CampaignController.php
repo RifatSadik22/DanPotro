@@ -30,23 +30,6 @@
                 <label class="form-label">Member Since</label>
                 <p>{{ auth()->user()->created_at->format('M d, Y') }}</p>
             </div>
-            <div class="form-group">
-                <label class="form-label">Donor Badge</label>
-                <p>
-                    @if(auth()->user()->badge)
-                        <span class="donor-badge donor-badge-{{ strtolower(auth()->user()->badge['name']) }}">
-                            <span>{{ auth()->user()->badge['icon'] }}</span>
-                            <span>{{ auth()->user()->badge['name'] }} Donor</span>
-                        </span>
-                    @else
-                        <span class="text-gray-500">No badge yet</span>
-                    @endif
-                </p>
-            </div>
-            <div class="form-group">
-                <label class="form-label">Total Donations</label>
-                <p>${{ number_format(auth()->user()->total_donations, 2) }}</p>
-            </div>
         </div>
     </div>
 
@@ -55,7 +38,7 @@
             <h2 class="card-title">Quick Stats</h2>
         </div>
         <div class="card">
-            <div class="grid grid-3">
+            <div class="grid grid-2">
                 <div class="text-center">
                     <h3>{{ $donations->count() }}</h3>
                     <p>Total Donations</p>
@@ -63,11 +46,6 @@
                 <div class="text-center">
                     <h3>${{ number_format($donations->sum('amount'), 2) }}</h3>
                     <p>Total Amount</p>
-                </div>
-                <div class="text-center">
-                    <h3>{{ $wishlist?->count() ?? 0 }}</h3>
-                    <p>Saved Campaigns</p>
-
                 </div>
             </div>
         </div>
@@ -101,10 +79,10 @@
                             <td style="padding: 1rem;">${{ number_format($donation->amount, 2) }}</td>
                             <td style="padding: 1rem;">{{ $donation->created_at->format('M d, Y') }}</td>
                             <td style="padding: 1rem;">
-                                <span style="padding: 0.25rem 0.5rem; border-radius: 3px; font-size: 0.875rem; 
-                                    @if($donation->status === 'completed') background-color: #d4edda; color: #155724; @endif
-                                    @if($donation->status === 'pending') background-color: #fff3cd; color: #856404; @endif
-                                    @if($donation->status === 'failed') background-color: #f8d7da; color: #721c24; @endif">
+                                <span class="badge
+                                    @if($donation->status === 'completed') badge-success @endif
+                                    @if($donation->status === 'pending') badge-warning @endif
+                                    @if($donation->status === 'failed') badge-danger @endif">
                                     {{ ucfirst($donation->status) }}
                                 </span>
                             </td>
@@ -122,36 +100,33 @@
         @endif
     </div>
 </div>
-
-<div class="card">
-    <div class="card-header">
-        <h2 class="card-title">Saved Campaigns</h2>
-    </div>
-    <div class="card">
-        @if($wishlist?->count() ?? 0)
-
-            <div class="grid grid-3">
-                @foreach($wishlist as $item)
-                    <div class="campaign-card">
-                        <h3>{{ $item->campaign->title }}</h3>
-                        <p>{{ Str::limit($item->campaign->description, 100) }}</p>
-                        <div class="campaign-actions">
-                            <a href="{{ route('campaigns.show', $item->campaign->id) }}" class="btn btn-primary">View</a>
-                            <form action="{{ route('wishlist.remove', $item->campaign->id) }}" method="POST" class="d-inline">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-danger">Remove</button>
-                            </form>
-                        </div>
-                    </div>
-                @endforeach
-            </div>
-        @else
-            <div class="text-center">
-                <p>No saved campaigns yet.</p>
-                <a href="{{ route('campaigns.index') }}" class="btn btn-primary">Browse Campaigns</a>
-            </div>
-        @endif
-    </div>
-</div>
 @endsection
+
+<style>
+.badge {
+    padding: 0.35em 0.65em;
+    border-radius: 0.25rem;
+    font-size: 0.875em;
+    font-weight: 700;
+}
+
+.badge-none {
+    background-color: #6c757d;
+    color: white;
+}
+
+.badge-bronze {
+    background-color: #cd7f32;
+    color: white;
+}
+
+.badge-silver {
+    background-color: #c0c0c0;
+    color: white;
+}
+
+.badge-gold {
+    background-color: #ffd700;
+    color: black;
+}
+</style>

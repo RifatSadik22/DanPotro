@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 use App\Models\Campaign;
+use App\Models\Donation;
+use Illuminate\Support\Facades\DB;
 
 class HomeController extends Controller
 {
@@ -17,7 +20,15 @@ class HomeController extends Controller
     {
         $user = auth()->user();
         $donations = $user->donations()->with('campaign')->latest()->get();
-        return view('user.dashboard', compact('donations'));
+
+        $topDonors = User::select('users.name', DB::raw('SUM(donations.amount) as total_amount'))
+            ->join('donations', 'users.id', '=', 'donations.user_id')
+            ->groupBy('users.id', 'users.name')
+            ->orderBy('total_amount', 'desc')
+            ->limit(10)
+            ->get();
+
+        return view('user.dashboard', compact('donations', 'topDonors'));
     }
 
     public function adminDashboard()

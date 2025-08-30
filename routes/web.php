@@ -8,7 +8,9 @@ use App\Http\Controllers\DonationController;
 use App\Http\Controllers\WishlistController;
 use App\Http\Controllers\AdminCampaignController;
 use App\Http\Controllers\LeaderboardController;
-use App\Http\Controllers\Admin\ReportController;
+use App\Http\Controllers\Admin\ReportController as AdminReportController;
+use App\Http\Controllers\ReportController;
+use App\Http\Controllers\DonorController;
 
 /*
 |--------------------------------------------------------------------------
@@ -40,17 +42,24 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/donations', [DonationController::class, 'store'])->name('donations.store');
     Route::post('/wishlist/{campaign}', [WishlistController::class, 'add'])->name('wishlist.add');
     Route::delete('/wishlist/{campaign}', [WishlistController::class, 'remove'])->name('wishlist.remove');
+    Route::get('/top-donors', [App\Http\Controllers\DashboardController::class, 'topDonors'])
+        ->name('top-donors');
+    Route::get('/top-three-donors', [DonorController::class, 'topThree'])->name('donors.top-three');
+    Route::get('/monthly-donations', [ReportController::class, 'monthlyDonations'])->name('reports.monthly');
+    Route::get('/weekly-donations', [ReportController::class, 'weeklyDonations'])->name('reports.weekly');
 });
 
 // Admin routes
-Route::middleware(['auth', 'admin'])->group(function () {
-    Route::get('/admin/dashboard', [HomeController::class, 'adminDashboard'])->name('admin.dashboard');
+Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
+    Route::get('/dashboard', [HomeController::class, 'adminDashboard'])->name('admin.dashboard');
     Route::resource('campaigns', CampaignController::class)->except(['index', 'show']);
     Route::get('/test-form', function() {
         return view('test-form');
     })->name('test-form');
-    Route::patch('/admin/campaigns/{campaign}/status', [AdminCampaignController::class, 'updateStatus'])
+    Route::patch('/campaigns/{campaign}/status', [AdminCampaignController::class, 'updateStatus'])
          ->name('admin.campaigns.status');
-    Route::get('/admin/reports', [ReportController::class, 'index'])->name('admin.reports.index');
-    Route::get('/admin/reports/generate', [ReportController::class, 'generate'])->name('admin.reports.generate');
+    Route::get('/reports', [AdminReportController::class, 'index'])->name('admin.reports.index');
+    Route::get('/reports/generate', [AdminReportController::class, 'generate'])->name('admin.reports.generate');
+    Route::get('/reports/donations', [AdminReportController::class, 'donationReports'])
+        ->name('admin.reports.donations');
 });

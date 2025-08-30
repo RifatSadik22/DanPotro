@@ -7,6 +7,7 @@ use App\Models\Donation;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\View;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
@@ -75,5 +76,19 @@ class ReportController extends Controller
         return Pdf::loadView('admin.reports.pdf', $data)
             ->setPaper('a4')
             ->download("donations-{$month->format('Y-m')}.pdf");
+    }
+
+    public function donationReports()
+    {
+        $monthlyReports = Donation::select(
+            DB::raw('DATE_FORMAT(created_at, "%Y-%m") as month'),
+            DB::raw('COUNT(*) as donation_count'),
+            DB::raw('SUM(amount) as total_amount')
+        )
+            ->groupBy('month')
+            ->orderByDesc('month')
+            ->get();
+
+        return view('admin.donations_report', compact('monthlyReports'));
     }
 }

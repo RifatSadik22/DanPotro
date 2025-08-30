@@ -154,4 +154,30 @@
         @endif
     </div>
 </div>
+
+<div class="py-6">
+    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+        <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
+            <h2 class="text-2xl font-bold mb-4">Top Donors</h2>
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead>
+                        <tr>
+                            <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Donor Name</th>
+                            <th class="px-6 py-3 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Donations</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        @foreach($topDonors as $donor)
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap">{{ $donor->name }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">${{ number_format($donor->total_amount, 2) }}</td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
 @endsection

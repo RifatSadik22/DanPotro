@@ -19,16 +19,16 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www
 
-# Copy app files
+# Copy all Laravel files
 COPY . .
 
-# ✅ Copy built frontend (dist → public)
-COPY --from=frontend /app/dist ./public
+# ✅ Copy Vite build (goes into public/build)
+COPY --from=frontend /app/public/build ./public/build
 
 # Install PHP dependencies
 RUN composer install --no-dev --optimize-autoloader
 
-# Laravel setup
+# Laravel optimizations
 RUN php artisan config:clear && \
     php artisan route:clear && \
     php artisan view:clear

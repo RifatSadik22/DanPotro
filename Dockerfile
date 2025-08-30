@@ -22,8 +22,8 @@ WORKDIR /var/www
 # Copy app files
 COPY . .
 
-# Copy built frontend from Stage 1
-COPY --from=frontend /app/public/dist ./public/dist
+# ✅ Copy built frontend (dist → public)
+COPY --from=frontend /app/dist ./public
 
 # Install PHP dependencies
 RUN composer install --no-dev --optimize-autoloader
@@ -34,3 +34,4 @@ RUN php artisan config:clear && \
     php artisan view:clear
 
 CMD ["php-fpm"]
+

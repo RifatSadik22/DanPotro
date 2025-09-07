@@ -441,15 +441,17 @@
 
         /* Campaign Cards */
         .campaign-card {
-            background: white;
+            background: var(--card-bg);
             border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 6px var(--shadow-color);
             overflow: hidden;
-            transition: transform 0.3s;
+            transition: all 0.3s ease;
+            border: 1px solid var(--border-color);
         }
 
         .campaign-card:hover {
             transform: translateY(-5px);
+            box-shadow: 0 8px 15px var(--shadow-color);
         }
 
         .campaign-image {
@@ -464,12 +466,13 @@
 
         .campaign-title {
             font-size: 1.25rem;
-            color: #2c3e50;
+            color: var(--heading-color);
             margin-bottom: 0.5rem;
+            font-weight: 600;
         }
 
         .campaign-description {
-            color: #6c757d;
+            color: var(--text-secondary);
             margin-bottom: 1rem;
             line-height: 1.5;
         }
@@ -477,7 +480,7 @@
         .progress-bar {
             width: 100%;
             height: 10px;
-            background-color: #e2e8f0;
+            background-color: var(--border-color);
             border-radius: 5px;
             overflow: hidden;
             margin-bottom: 1rem;
@@ -486,7 +489,7 @@
         .progress-fill {
             height: 100%;
             background: linear-gradient(90deg, #87CEEB, #5F9EA0);
-            transition: width 0.3s;
+            transition: width 0.3s ease;
         }
 
         /* Footer */
@@ -560,6 +563,122 @@
         .text-gray-500 {
             color: #6b7280;
         }
+
+        /* Table Styles */
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1rem;
+        }
+
+        .table th,
+        .table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .table th {
+            background-color: var(--card-bg);
+            font-weight: 600;
+            color: var(--heading-color);
+        }
+
+        .table tbody tr:hover {
+            background-color: var(--card-hover);
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        /* Badge Styles */
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            line-height: 1;
+            text-align: center;
+            white-space: nowrap;
+            vertical-align: baseline;
+            border-radius: 0.25rem;
+        }
+
+        .badge-success {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        .badge-warning {
+            background-color: #ffc107;
+            color: #212529;
+        }
+
+        .badge-danger {
+            background-color: var(--error-color);
+            color: white;
+        }
+
+        /* Flex utilities */
+        .flex {
+            display: flex;
+        }
+
+        .flex-1 {
+            flex: 1;
+        }
+
+        .gap-4 {
+            gap: 1rem;
+        }
+
+        .gap-2 {
+            gap: 0.5rem;
+        }
+
+        /* Font weight utilities */
+        .font-weight-bold {
+            font-weight: 600;
+        }
+
+        /* Background utilities */
+        .bg-light {
+            background-color: #f8f9fa;
+        }
+
+        /* Pagination styles */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            list-style: none;
+            padding: 0;
+            margin: 1rem 0;
+        }
+
+        .pagination li {
+            margin: 0 0.25rem;
+        }
+
+        .pagination a,
+        .pagination span {
+            display: block;
+            padding: 0.5rem 0.75rem;
+            text-decoration: none;
+            border: 1px solid var(--border-color);
+            border-radius: 0.25rem;
+            color: var(--link-color);
+        }
+
+        .pagination a:hover {
+            background-color: var(--card-hover);
+        }
+
+        .pagination .active span {
+            background-color: var(--button-bg);
+            color: var(--button-text);
+            border-color: var(--button-bg);
+        }
     </style>
 </head>
 <body>
@@ -571,7 +690,10 @@
                     <ul class="nav-menu">
                         <li><a href="{{ route('home') }}">Home</a></li>
                         <li><a href="{{ route('campaigns.index') }}">Campaigns</a></li>
+                        <li><a href="{{ route('leaderboard') }}">Leaderboard</a></li>
                         @auth
+                            <li><a href="{{ route('campaigns.saved') }}">Saved Campaigns</a></li>
+                            <li><a href="{{ route('donations.history') }}">My Donations</a></li>
                             @if(auth()->user()->isAdmin())
                                 <li><a href="{{ route('admin.dashboard') }}">Admin Dashboard</a></li>
                             @else

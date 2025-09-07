@@ -100,4 +100,13 @@ class User extends Authenticatable
     {
         return $this->role === 'admin';
     }
+
+    /**
+     * The campaigns that belong to the user.
+     */
+    public function savedCampaigns()
+    {
+        return $this->belongsToMany(Campaign::class, 'saved_campaigns')
+                    ->withTimestamps();
+    }
 }

@@ -15,7 +15,7 @@ return [
     |
     */
 
-    'default' => env('DB_CONNECTION', 'mysql'),
+    'default' => env('DB_CONNECTION', 'pgsql'),
 
     /*
     |--------------------------------------------------------------------------
@@ -149,3 +149,18 @@ return [
     ],
 
 ];
+
+// Parse DATABASE_URL for Render deployment
+if (env('DATABASE_URL')) {
+    $url = parse_url(env('DATABASE_URL'));
+    
+    if (isset($url['host'])) {
+        config([
+            'database.connections.pgsql.host' => $url['host'],
+            'database.connections.pgsql.port' => $url['port'] ?? '5432',
+            'database.connections.pgsql.database' => ltrim($url['path'] ?? '', '/'),
+            'database.connections.pgsql.username' => $url['user'] ?? '',
+            'database.connections.pgsql.password' => $url['pass'] ?? '',
+        ]);
+    }
+}

@@ -65,9 +65,8 @@
                     <p>Total Amount</p>
                 </div>
                 <div class="text-center">
-                    <h3>{{ $wishlist?->count() ?? 0 }}</h3>
+                    <h3>{{ $savedCampaigns->count() }}</h3>
                     <p>Saved Campaigns</p>
-
                 </div>
             </div>
         </div>
@@ -128,27 +127,53 @@
         <h2 class="card-title">Saved Campaigns</h2>
     </div>
     <div class="card">
-        @if($wishlist?->count() ?? 0)
-
+        @if($savedCampaigns->count() > 0)
             <div class="grid grid-3">
-                @foreach($wishlist as $item)
-                    <div class="campaign-card">
-                        <h3>{{ $item->campaign->title }}</h3>
-                        <p>{{ Str::limit($item->campaign->description, 100) }}</p>
-                        <div class="campaign-actions">
-                            <a href="{{ route('campaigns.show', $item->campaign->id) }}" class="btn btn-primary">View</a>
-                            <form action="{{ route('wishlist.remove', $item->campaign->id) }}" method="POST" class="d-inline">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-danger">Remove</button>
-                            </form>
+                @foreach($savedCampaigns as $campaign)
+                    <div class="campaign-card" id="dashboard-campaign-{{ $campaign->id }}">
+                        @if($campaign->image)
+                            <img src="{{ asset('storage/' . $campaign->image) }}" alt="{{ $campaign->title }}" class="campaign-image">
+                        @else
+                            <div class="campaign-image" style="background: linear-gradient(135deg, #87CEEB, #5F9EA0); display: flex; align-items: center; justify-content: center; color: white; font-size: 1.2rem;">
+                                {{ $campaign->title }}
+                            </div>
+                        @endif
+                        <div class="campaign-content">
+                            <h3 class="campaign-title">{{ $campaign->title }}</h3>
+                            <p class="campaign-description">{{ Str::limit($campaign->description, 100) }}</p>
+                            
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: {{ $campaign->progress_percentage }}%"></div>
+                            </div>
+                            
+                            <div class="mb-2">
+                                <strong>${{ number_format($campaign->current_amount, 2) }}</strong> raised of 
+                                <strong>${{ number_format($campaign->target_amount, 2) }}</strong>
+                                <span class="text-right">({{ $campaign->progress_percentage }}%)</span>
+                            </div>
+                            
+                            <div class="mb-2">
+                                <small>Ends: {{ $campaign->end_date->format('M d, Y') }}</small>
+                            </div>
+                            
+                            <div class="flex gap-2">
+                                <a href="{{ route('campaigns.show', $campaign->id) }}" class="btn btn-primary">View Details</a>
+                                <button 
+                                    class="btn btn-danger remove-campaign" 
+                                    data-id="{{ $campaign->id }}"
+                                    data-title="{{ $campaign->title }}"
+                                >
+                                    Remove
+                                </button>
+                            </div>
                         </div>
                     </div>
                 @endforeach
             </div>
         @else
             <div class="text-center">
-                <p>No saved campaigns yet.</p>
+                <h3>No Saved Campaigns</h3>
+                <p>You haven't saved any campaigns yet. Start exploring and save campaigns you're interested in!</p>
                 <a href="{{ route('campaigns.index') }}" class="btn btn-primary">Browse Campaigns</a>
             </div>
         @endif
@@ -180,4 +205,76 @@
         </div>
     </div>
 </div>
+@endsection
+
+@section('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const removeButtons = document.querySelectorAll('.remove-campaign');
+
+    removeButtons.forEach(button => {
+        button.addEventListener('click', function () {
+            const campaignId = this.dataset.id;
+            const campaignTitle = this.dataset.title;
+            const campaignCard = this.closest('.campaign-card');
+
+            if (confirm(`Are you sure you want to remove "${campaignTitle}" from your saved campaigns?`)) {
+                fetch(`/campaigns/${campaignId}/unsave`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                })
+                .then(res => {
+                    if (!res.ok) {
+                        throw new Error(`HTTP error! status: ${res.status}`);
+                    }
+                    return res.json();
+                })
+                .then(data => {
+                    console.log('Response data:', data);
+                    
+                    if (data.status === 'removed') {
+                        // Remove the campaign card from the DOM
+                        campaignCard.remove();
+                        
+                        // Update the saved campaigns count
+                        const countElement = document.querySelector('.text-center h3');
+                        if (countElement && countElement.textContent.includes('Saved Campaigns')) {
+                            const currentCount = parseInt(countElement.textContent);
+                            countElement.textContent = currentCount - 1;
+                        }
+                        
+                        // Show success message
+                        const alert = document.createElement('div');
+                        alert.className = 'alert alert-success';
+                        alert.textContent = data.message;
+                        alert.style.position = 'fixed';
+                        alert.style.top = '20px';
+                        alert.style.right = '20px';
+                        alert.style.zIndex = '9999';
+                        document.body.appendChild(alert);
+                        
+                        setTimeout(() => {
+                            alert.remove();
+                        }, 3000);
+
+                        // Check if no campaigns left
+                        const remainingCampaigns = document.querySelectorAll('.campaign-card');
+                        if (remainingCampaigns.length === 0) {
+                            location.reload(); // Reload to show "no campaigns" message
+                        }
+                    }
+                })
+                .catch(err => {
+                    console.error('Error:', err);
+                    alert('An error occurred: ' + err.message);
+                });
+            }
+        });
+    });
+});
+</script>
 @endsection

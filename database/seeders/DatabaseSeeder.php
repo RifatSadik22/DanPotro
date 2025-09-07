@@ -18,29 +18,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             AdminUserSeeder::class,
             CampaignSeeder::class,
-        ]);
-
-        // Create test user
-        $user = User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-            'password' => bcrypt('password')
-        ]);
-
-        // Create test campaign
-        $campaign = Campaign::create([
-            'title' => 'Test Campaign',
-            'description' => 'This is a test campaign',
-            'goal' => 1000,
-            'status' => 'active'
-        ]);
-
-        // Create test donation
-        Donation::create([
-            'user_id' => $user->id,
-            'campaign_id' => $campaign->id,
-            'amount' => 100,
-            'status' => 'completed'
+            TestDataSeeder::class,
         ]);
     }
 }

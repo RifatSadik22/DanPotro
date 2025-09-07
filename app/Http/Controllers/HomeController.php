@@ -13,6 +13,12 @@ class HomeController extends Controller
     public function index()
     {
         $campaigns = Campaign::where('status', 'active')->latest()->get();
+        
+        // Load saved campaigns for authenticated user to show correct button states
+        if (auth()->check()) {
+            auth()->user()->load('savedCampaigns');
+        }
+        
         return view('home', compact('campaigns'));
     }
 
@@ -20,6 +26,7 @@ class HomeController extends Controller
     {
         $user = auth()->user();
         $donations = $user->donations()->with('campaign')->latest()->get();
+        $savedCampaigns = $user->savedCampaigns()->latest()->get();
 
         $topDonors = User::select('users.name', DB::raw('SUM(donations.amount) as total_amount'))
             ->join('donations', 'users.id', '=', 'donations.user_id')
@@ -28,7 +35,7 @@ class HomeController extends Controller
             ->limit(10)
             ->get();
 
-        return view('user.dashboard', compact('donations', 'topDonors'));
+        return view('user.dashboard', compact('donations', 'topDonors', 'savedCampaigns'));
     }
 
     public function adminDashboard()

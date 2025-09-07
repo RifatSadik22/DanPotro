@@ -53,6 +53,21 @@
                 </li>
             </ul>
         </div>
+
+        @auth
+        <div class="mb-3">
+            @php
+                $isSaved = auth()->user()->savedCampaigns->contains($campaign->id);
+            @endphp
+            <button 
+                class="btn save-toggle {{ $isSaved ? 'btn-danger' : 'btn-secondary' }}" 
+                data-id="{{ $campaign->id }}"
+            >
+                <i class="fas fa-bookmark"></i>
+                {{ $isSaved ? 'Unsave Campaign' : 'Save Campaign' }}
+            </button>
+        </div>
+        @endauth
     </div>
     
     <div class="card">
@@ -136,4 +151,80 @@
     </div>
 </div>
 @endif
+@endsection
+
+@section('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const buttons = document.querySelectorAll('.save-toggle');
+
+    buttons.forEach(button => {
+        button.addEventListener('click', function () {
+            const campaignId = this.dataset.id;
+            const btn = this;
+            
+            // Determine if this is a save or unsave action
+            const isCurrentlySaved = btn.classList.contains('btn-danger');
+            const url = isCurrentlySaved 
+                ? "{{ route('campaign.unsave', $campaign->id) }}" 
+                : "{{ route('campaign.save', $campaign->id) }}";
+            const method = isCurrentlySaved ? 'DELETE' : 'POST';
+
+            console.log('Making request to:', url, 'with method:', method);
+            
+            fetch(url, {
+                method: method,
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+            })
+            .then(res => {
+                console.log('Response status:', res.status);
+                if (!res.ok) {
+                    throw new Error(`HTTP error! status: ${res.status}`);
+                }
+                return res.json();
+            })
+            .then(data => {
+                console.log('Response data:', data); // Debug log
+                
+                if (data.status === 'saved') {
+                    btn.classList.remove('btn-secondary');
+                    btn.classList.add('btn-danger');
+                    btn.innerHTML = '<i class="fas fa-bookmark"></i> Unsave Campaign';
+                } else if (data.status === 'removed') {
+                    btn.classList.remove('btn-danger');
+                    btn.classList.add('btn-secondary');
+                    btn.innerHTML = '<i class="fas fa-bookmark"></i> Save Campaign';
+                } else if (data.status === 'error') {
+                    alert('Error: ' + data.message);
+                    return;
+                }
+                
+                // Show success message
+                if (data.message) {
+                    const alert = document.createElement('div');
+                    alert.className = 'alert alert-success';
+                    alert.textContent = data.message;
+                    alert.style.position = 'fixed';
+                    alert.style.top = '20px';
+                    alert.style.right = '20px';
+                    alert.style.zIndex = '9999';
+                    document.body.appendChild(alert);
+                    
+                    setTimeout(() => {
+                        alert.remove();
+                    }, 3000);
+                }
+            })
+            .catch(err => {
+                console.error('Error:', err);
+                alert('An error occurred: ' + err.message);
+            });
+        });
+    });
+});
+</script>
 @endsection 

@@ -43,4 +43,13 @@ class Campaign extends Model
         }
         return round(($this->current_amount / $this->target_amount) * 100, 2);
     }
+
+    /**
+     * The users that saved the campaign.
+     */
+    public function savedByUsers()
+    {
+        return $this->belongsToMany(User::class, 'saved_campaigns')
+                    ->withTimestamps();
+    }
 }

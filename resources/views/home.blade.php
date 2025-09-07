@@ -56,7 +56,19 @@
                     <small>Ends: {{ $campaign->end_date->format('M d, Y') }}</small>
                 </div>
                 
-                <a href="{{ route('campaigns.show', $campaign->id) }}" class="btn btn-primary">View Details</a>
+                <div class="flex gap-2">
+                    <a href="{{ route('campaigns.show', $campaign->id) }}" class="btn btn-primary">View Details</a>
+                    
+                    @auth
+                        @php
+                            $saved = auth()->user()->savedCampaigns->contains($campaign->id);
+                        @endphp
+                        <button class="btn {{ $saved ? 'btn-danger unsave-btn' : 'btn-success save-btn' }}" 
+                                data-id="{{ $campaign->id }}">
+                            {{ $saved ? 'Unsave' : 'Save' }}
+                        </button>
+                    @endauth
+                </div>
             </div>
         </div>
         @endforeach
@@ -70,4 +82,99 @@
     </div>
 </div>
 @endif
+@endsection
+
+@section('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const csrfToken = '{{ csrf_token() }}';
+
+    function saveHandler() {
+        const id = this.dataset.id;
+        const btn = this;
+        
+        console.log('Attempting to save campaign:', id);
+        
+        fetch(`/campaigns/${id}/save`, { 
+            method: 'POST', 
+            headers: { 
+                'X-CSRF-TOKEN': csrfToken, 
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            } 
+        })
+        .then(res => {
+            console.log('Response status:', res.status);
+            if (!res.ok) {
+                throw new Error(`HTTP error! status: ${res.status}`);
+            }
+            return res.json();
+        })
+        .then(data => {
+            console.log('Save response:', data);
+            if(data.status === 'saved'){
+                btn.textContent = 'Unsave';
+                btn.classList.remove('btn-success', 'save-btn');
+                btn.classList.add('btn-danger', 'unsave-btn');
+                btn.removeEventListener('click', saveHandler);
+                btn.addEventListener('click', unsaveHandler);
+                
+                // Show success message
+                alert('Campaign saved successfully!');
+            } else if(data.status === 'error') {
+                alert('Error: ' + data.message);
+            }
+        })
+        .catch(err => {
+            console.error('Error saving campaign:', err);
+            alert('An error occurred while saving the campaign: ' + err.message);
+        });
+    }
+
+    function unsaveHandler() {
+        const id = this.dataset.id;
+        const btn = this;
+        
+        console.log('Attempting to unsave campaign:', id);
+        
+        fetch(`/campaigns/${id}/unsave`, { 
+            method: 'DELETE', 
+            headers: { 
+                'X-CSRF-TOKEN': csrfToken, 
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            } 
+        })
+        .then(res => {
+            console.log('Response status:', res.status);
+            if (!res.ok) {
+                throw new Error(`HTTP error! status: ${res.status}`);
+            }
+            return res.json();
+        })
+        .then(data => {
+            console.log('Unsave response:', data);
+            if(data.status === 'removed'){
+                btn.textContent = 'Save';
+                btn.classList.remove('btn-danger', 'unsave-btn');
+                btn.classList.add('btn-success', 'save-btn');
+                btn.removeEventListener('click', unsaveHandler);
+                btn.addEventListener('click', saveHandler);
+                
+                // Show success message
+                alert('Campaign removed from saved list!');
+            } else if(data.status === 'error') {
+                alert('Error: ' + data.message);
+            }
+        })
+        .catch(err => {
+            console.error('Error removing campaign:', err);
+            alert('An error occurred while removing the campaign: ' + err.message);
+        });
+    }
+
+    document.querySelectorAll('.save-btn').forEach(btn => btn.addEventListener('click', saveHandler));
+    document.querySelectorAll('.unsave-btn').forEach(btn => btn.addEventListener('click', unsaveHandler));
+});
+</script>
 @endsection 

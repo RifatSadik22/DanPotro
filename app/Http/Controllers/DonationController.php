@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Donation;
 use App\Models\Campaign;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class DonationController extends Controller
 {
@@ -46,5 +47,37 @@ class DonationController extends Controller
 
         return redirect()->route('campaigns.show', $request->campaign_id)
             ->with('success', 'Thank you for your donation! Your contribution has been recorded.');
+    }
+
+    public function history()
+    {
+        $donations = auth()->user()->donations()
+            ->with('campaign')
+            ->latest()
+            ->paginate(10);
+            
+        return view('user.donation-history', compact('donations'));
+    }
+
+    public function monthlyReport()
+    {
+        $monthlyDonations = Donation::select(
+            DB::raw('YEAR(created_at) as year'),
+            DB::raw('MONTH(created_at) as month'),
+            DB::raw('SUM(amount) as total_amount')
+        )
+        ->where('status', 'completed')
+        ->groupBy('year', 'month')
+        ->orderBy('year', 'desc')
+        ->orderBy('month', 'desc')
+        ->get()
+        ->map(function ($donation) {
+            return [
+                'month' => Carbon::createFromDate($donation->year, $donation->month, 1)->format('F Y'),
+                'total' => $donation->total_amount
+            ];
+        });
+
+        return view('reports.monthly', compact('monthlyDonations'));
     }
 }

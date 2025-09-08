@@ -39,7 +39,10 @@ Route::middleware(['auth'])->group(function () {
 
     // Saved campaigns
     Route::get('/saved-campaigns', [SavedCampaignController::class, 'index'])->name('campaigns.saved');
-    Route::post('/campaigns/{id}/save', [SavedCampaignController::class, 'save'])->name('campaign.save');
+    // Unified save route handler to support both named routes and existing JS fetches
+    Route::post('/campaigns/{id}/save', [CampaignController::class, 'save'])->name('campaign.save');
+    // Additional named route as requested to fix "campaigns.save" references
+    Route::post('/campaigns/{campaign}/save', [CampaignController::class, 'save'])->name('campaigns.save');
     Route::delete('/campaigns/{id}/unsave', [SavedCampaignController::class, 'unsave'])->name('campaign.unsave');
 });
 

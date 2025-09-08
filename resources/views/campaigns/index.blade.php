@@ -3,6 +3,15 @@
 @section('title', 'Campaigns - DanPotro')
 
 @section('content')
+<div class="card mb-2">
+    <form method="GET" action="{{ route('campaigns.index') }}" class="flex gap-2">
+        <input type="text" name="search" value="{{ request('search') }}" class="form-control" placeholder="Search campaigns..." />
+        <button type="submit" class="btn btn-primary">Search</button>
+    </form>
+    @if(request('search'))
+        <p class="mt-1 text-muted">Showing results for: "{{ request('search') }}"</p>
+    @endif
+  </div>
 <div class="grid grid-3">
     @foreach($campaigns as $campaign)
         <div class="campaign-card">
@@ -50,6 +59,9 @@
         </div>
     @endforeach
 </div>
+@if(method_exists($campaigns, 'links'))
+    {{ $campaigns->appends(request()->only('search'))->links() }}
+@endif
 @endsection
 
 @section('scripts')

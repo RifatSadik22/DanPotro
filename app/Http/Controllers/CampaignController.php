@@ -11,9 +11,20 @@ class CampaignController extends Controller
     /**
      * Display a listing of campaigns
      */
-    public function index()
+    public function index(Request $request)
     {
-        $campaigns = Campaign::where('status', 'active')->latest()->get();
+        $search = $request->query('search');
+
+        $query = Campaign::where('status', 'active');
+
+        if (!empty($search)) {
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', '%' . $search . '%')
+                  ->orWhere('description', 'like', '%' . $search . '%');
+            });
+        }
+
+        $campaigns = $query->latest()->get();
         
         // Load saved campaigns for authenticated user to show correct button states
         if (auth()->check()) {

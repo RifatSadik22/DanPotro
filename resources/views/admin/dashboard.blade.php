@@ -60,7 +60,7 @@
                     <td>${{ number_format($campaign->current_amount, 2) }}</td>
                     <td>{{ $campaign->progress_percentage }}%</td>
                     <td>{{ ucfirst($campaign->status) }}</td>
-                    <td>{{ $campaign->end_date->format('M d, Y') }}</td>
+                    <td>{{ optional($campaign->end_date)->format('M d, Y') ?? 'N/A' }}</td>
                     <td>
                         <a href="{{ route('admin.campaigns.edit', $campaign->id) }}" class="btn btn-secondary">Edit</a>
                         <form action="{{ route('admin.campaigns.destroy', $campaign->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Delete this campaign?');">

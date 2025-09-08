@@ -21,7 +21,7 @@
                     <tbody>
                         @foreach($donations as $donation)
                         <tr>
-                            <td>{{ $donation->created_at->format('M d, Y') }}</td>
+                            <td>{{ optional($donation->created_at)->format('M d, Y') }}</td>
                             <td>
                                 <a href="{{ route('campaigns.show', $donation->campaign) }}" class="text-primary">
                                     {{ $donation->campaign->title }}

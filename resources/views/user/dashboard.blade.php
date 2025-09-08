@@ -28,7 +28,7 @@
             </div>
             <div class="form-group">
                 <label class="form-label">Member Since</label>
-                <p>{{ auth()->user()->created_at->format('M d, Y') }}</p>
+                <p>{{ optional(auth()->user()->created_at)->format('M d, Y') ?? 'N/A' }}</p>
             </div>
             <div class="form-group">
                 <label class="form-label">Donor Badge</label>
@@ -98,7 +98,7 @@
                                 </a>
                             </td>
                             <td style="padding: 1rem;">${{ number_format($donation->amount, 2) }}</td>
-                            <td style="padding: 1rem;">{{ $donation->created_at->format('M d, Y') }}</td>
+                            <td style="padding: 1rem;">{{ optional($donation->created_at)->format('M d, Y') }}</td>
                             <td style="padding: 1rem;">
                                 <span style="padding: 0.25rem 0.5rem; border-radius: 3px; font-size: 0.875rem; 
                                     @if($donation->status === 'completed') background-color: #d4edda; color: #155724; @endif

@@ -45,7 +45,7 @@
                     <label for="end_date" class="form-label">End Date</label>
                     <input type="date" id="end_date" name="end_date" 
                            class="form-control @error('end_date') is-invalid @enderror" 
-                           value="{{ old('end_date', $campaign->end_date->format('Y-m-d')) }}" required>
+                           value="{{ old('end_date', optional($campaign->end_date)->format('Y-m-d')) }}" required>
                     @error('end_date')
                         <div class="form-error">{{ $message }}</div>
                     @enderror

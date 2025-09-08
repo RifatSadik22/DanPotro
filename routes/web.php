@@ -4,13 +4,9 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\CampaignController;
-use App\Http\Controllers\Admin\CampaignController as AdminCampaignController;
 use App\Http\Controllers\SavedCampaignController;
-use App\Http\Controllers\DonationController;
 use App\Http\Controllers\LeaderboardController;
-use App\Http\Controllers\Admin\ReportController as AdminReportController;
-use App\Http\Controllers\ReportController;
-use App\Http\Controllers\DonorController;
+use App\Http\Controllers\DonationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,46 +14,52 @@ use App\Http\Controllers\DonorController;
 |--------------------------------------------------------------------------
 */
 
-// Public routes
+// Home Routes
 Route::get('/', [HomeController::class, 'index'])->name('home');
+
+// Authentication Routes
+Route::get('/login', [AuthController::class, 'showLogin'])->name('login')->middleware('guest');
+Route::post('/login', [AuthController::class, 'login'])->name('login.post')->middleware('guest');
+Route::get('/register', [AuthController::class, 'showRegister'])->name('register')->middleware('guest');
+Route::post('/register', [AuthController::class, 'register'])->name('register.post')->middleware('guest');
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');
+
+// Public Campaign Routes (accessible to all)
 Route::get('/campaigns', [CampaignController::class, 'index'])->name('campaigns.index');
 Route::get('/campaigns/{id}', [CampaignController::class, 'show'])->name('campaigns.show');
 Route::get('/leaderboard', [LeaderboardController::class, 'index'])->name('leaderboard');
 
-// Auth routes
-Route::get('/login', [AuthController::class, 'showLogin'])->name('login')->middleware('guest');
-Route::post('/login', [AuthController::class, 'login'])->name('login.post');
-Route::get('/register', [AuthController::class, 'showRegister'])->name('register')->middleware('guest');
-Route::post('/register', [AuthController::class, 'register'])->name('register.post');
-Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');
-
-// User routes
-Route::middleware(['auth'])->group(function () {
+// Protected User Routes
+Route::middleware('auth')->group(function () {
+    // User Dashboard
     Route::get('/dashboard', [HomeController::class, 'dashboard'])->name('dashboard');
-    Route::post('/donations', [DonationController::class, 'store'])->name('donations.store');
-    Route::get('/donations/history', [DonationController::class, 'history'])->name('donations.history');
-
+    
     // Saved campaigns
-    Route::get('/saved-campaigns', [SavedCampaignController::class, 'index'])->name('campaigns.saved');
-    // Unified save route handler to support both named routes and existing JS fetches
+    Route::get('/saved-campaigns', [CampaignController::class, 'savedCampaigns'])->name('campaigns.saved');
+    // Save routes - support both URL params and both names for compatibility
     Route::post('/campaigns/{id}/save', [CampaignController::class, 'save'])->name('campaign.save');
-    // Additional named route as requested to fix "campaigns.save" references
     Route::post('/campaigns/{campaign}/save', [CampaignController::class, 'save'])->name('campaigns.save');
-    Route::delete('/campaigns/{id}/unsave', [SavedCampaignController::class, 'unsave'])->name('campaign.unsave');
+    Route::delete('/campaigns/{id}/unsave', [CampaignController::class, 'unsaveCampaign'])->name('campaigns.unsave');
+    
+    // Donation Routes
+    Route::post('/campaigns/{id}/donate', [DonationController::class, 'store'])->name('donations.store');
+    Route::get('/donations/history', [DonationController::class, 'history'])->name('donations.history');
 });
 
-// Admin routes
-Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
-    Route::get('/dashboard', [HomeController::class, 'adminDashboard'])->name('admin.dashboard');
-    Route::resource('campaigns', AdminCampaignController::class)->except(['index', 'show'])->names([
-        'create' => 'admin.campaigns.create',
-        'store' => 'admin.campaigns.store',
-        'edit' => 'admin.campaigns.edit',
-        'update' => 'admin.campaigns.update',
-        'destroy' => 'admin.campaigns.destroy'
-    ]);
-    Route::patch('/campaigns/{campaign}/status', [AdminCampaignController::class, 'updateStatus'])->name('admin.campaigns.status');
-    Route::get('/reports', [AdminReportController::class, 'index'])->name('admin.reports.index');
-    Route::get('/reports/generate', [AdminReportController::class, 'generate'])->name('admin.reports.generate');
-    Route::get('/reports/donations', [AdminReportController::class, 'donationReports'])->name('admin.reports.donations');
+// Admin Routes
+Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+    // Admin Dashboard
+    Route::get('/dashboard', [HomeController::class, 'adminDashboard'])->name('dashboard');
+    
+    // Admin Campaign Management
+    Route::get('/campaigns', [CampaignController::class, 'adminIndex'])->name('campaigns.index');
+    Route::get('/campaigns/create', [CampaignController::class, 'create'])->name('campaigns.create');
+    Route::post('/campaigns', [CampaignController::class, 'store'])->name('campaigns.store');
+    Route::get('/campaigns/{id}/edit', [CampaignController::class, 'edit'])->name('campaigns.edit');
+    Route::put('/campaigns/{id}', [CampaignController::class, 'update'])->name('campaigns.update');
+    Route::delete('/campaigns/{id}', [CampaignController::class, 'destroy'])->name('campaigns.destroy');
+    
+    // Admin Donation Management
+    Route::get('/donations', [DonationController::class, 'adminIndex'])->name('donations.index');
+    Route::get('/donations/{id}', [DonationController::class, 'show'])->name('donations.show');
 });

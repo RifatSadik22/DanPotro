@@ -374,7 +374,7 @@
 <body>
     <div class="container">
         <!-- Back Link -->
-        <a href="{{ route('user.dashboard') }}" class="back-link">
+        <a href="{{ route('dashboard') }}" class="back-link">
             ← Back to Dashboard
         </a>
 
@@ -490,7 +490,7 @@
                                         {{ ucfirst($campaign->status) }}
                                     </span>
                                     <span class="saved-date">
-                                        Saved: {{ $savedCampaign->created_at->format('M j, Y') }}
+                                        Saved: {{ optional($savedCampaign->created_at)->format('M j, Y') ?? 'N/A' }}
                                     </span>
                                 </div>
                                 
@@ -498,7 +498,7 @@
                                     <a href="{{ route('campaigns.show', $campaign->id) }}" class="btn btn-primary">
                                         View Details
                                     </a>
-                                    <form action="{{ route('campaign.unsave', $campaign->id) }}" method="POST" style="display: inline;">
+                                    <form action="{{ route('campaigns.unsave', $campaign->id) }}" method="POST" style="display: inline;">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn btn-danger" onclick="return confirm('Remove from saved campaigns?')" title="Remove from saved">

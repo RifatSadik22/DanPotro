@@ -53,7 +53,7 @@
                 </div>
                 
                 <div class="mb-2">
-                    <small>Ends: {{ $campaign->end_date->format('M d, Y') }}</small>
+                    <small>Ends: {{ optional($campaign->end_date)->format('M d, Y') ?? 'N/A' }}</small>
                 </div>
                 
                 <div class="flex gap-2">

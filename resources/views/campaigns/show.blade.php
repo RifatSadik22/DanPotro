@@ -46,10 +46,10 @@
                     </span>
                 </li>
                 <li style="padding: 0.5rem 0; border-bottom: 1px solid #e2e8f0;">
-                    <strong>End Date:</strong> {{ $campaign->end_date->format('M d, Y') }}
+                    <strong>End Date:</strong> {{ optional($campaign->end_date)->format('M d, Y') ?? 'N/A' }}
                 </li>
                 <li style="padding: 0.5rem 0;">
-                    <strong>Created:</strong> {{ $campaign->created_at->format('M d, Y') }}
+                    <strong>Created:</strong> {{ optional($campaign->created_at)->format('M d, Y') ?? 'N/A' }}
                 </li>
             </ul>
         </div>
@@ -77,7 +77,7 @@
         
         @auth
             @if($campaign->status === 'active')
-                <form method="POST" action="{{ route('donations.store') }}">
+                <form method="POST" action="{{ route('donations.store', ['id' => $campaign->id]) }}">
                     @csrf
                     <input type="hidden" name="campaign_id" value="{{ $campaign->id }}">
                     
@@ -144,7 +144,7 @@
                 @if($donation->message)
                     <p style="margin: 0; font-style: italic; color: #6c757d;">"{{ $donation->message }}"</p>
                 @endif
-                <small style="color: #6c757d;">{{ $donation->created_at->format('M d, Y') }}</small>
+                <small style="color: #6c757d;">{{ optional($donation->created_at)->format('M d, Y') }}</small>
             </div>
             @endforeach
         </div>
@@ -166,8 +166,8 @@ document.addEventListener('DOMContentLoaded', function () {
             // Determine if this is a save or unsave action
             const isCurrentlySaved = btn.classList.contains('btn-danger');
             const url = isCurrentlySaved 
-                ? "{{ route('campaign.unsave', $campaign->id) }}" 
-                : "{{ route('campaign.save', $campaign->id) }}";
+                ? "{{ route('campaigns.unsave', $campaign->id) }}" 
+                : "{{ route('campaigns.save', $campaign->id) }}";
             const method = isCurrentlySaved ? 'DELETE' : 'POST';
 
             console.log('Making request to:', url, 'with method:', method);

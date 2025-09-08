@@ -29,7 +29,7 @@
         <tbody>
             @foreach($donations as $donation)
                 <tr>
-                    <td>{{ $donation->created_at->format('Y-m-d') }}</td>
+                    <td>{{ optional($donation->created_at)->format('Y-m-d') }}</td>
                     <td>{{ $donation->user->name }}</td>
                     <td>{{ $donation->campaign->title }}</td>
                     <td>${{ number_format($donation->amount, 2) }}</td>

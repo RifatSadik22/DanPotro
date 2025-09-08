@@ -94,8 +94,8 @@ A comprehensive donation tracking website built with Laravel 10, featuring user 
 
 ## 👤 Default Admin Account
 
-- **Email**: admin@donationtracker.com
-- **Password**: admin123
+- **Email**: admin@example.com
+- **Password**: password
 
 ## 🧪 Testing the System
 
@@ -104,8 +104,8 @@ A comprehensive donation tracking website built with Laravel 10, featuring user 
 #### Login as Admin
 1. Go to http://localhost:8000/login
 2. Use admin credentials:
-   - Email: `admin@donationtracker.com`
-   - Password: `admin123`
+   - Email: `admin@example.com`
+   - Password: `password`
 3. You should be redirected to the admin dashboard
 
 #### Create New Campaign
